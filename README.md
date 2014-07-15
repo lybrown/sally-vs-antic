@@ -1,7 +1,18 @@
-Atari CPU vs. Graphics Modes
-----------------------------
+Atari CPU Time vs. Graphics Mode
+================================
 
+These tables show the percentage of cycles available to the CPU for various
+ANTIC modes of varying heights. The normalized tables show the percentage
+relative to the number of available cycles minus the DRAM refresh cycles which
+cannot be disabled except on text-mode bad-lines. See calc.pl for the math used
+to generate the tables. The calculations include the following cases where the
+CPU is halted:
 
+* DRAM refresh cycles (9 per scanline except for text-mode bad-lines)
+* LMS cycles (3 per 4K of bitmap data)
+* Modeline cycles (1 per mode line that's not an LMS)
+* Symbol cycles (1 per text-mode column)
+* Bitmap cycles (1 per byte for graphics, 8 per text-mode column, 10 for mode 3)
 
 <pre>
 PAL
@@ -232,3 +243,9 @@ Lines  ----  ----  ----  ----  ----  ----  ----  ----  ----  ----  ----  ----  -
   230     -     -     -     -     -     -     -     -     -     -  82.4     -  65.7  65.7
   240     -     -     -     -     -     -     -     -     -     -  81.7     -  64.2  64.2
 </pre>
+
+Links
+-----
+
+* AtariAge Topic
+  * http://atariage.com/forums/topic/227644-possible-screen-antic4-with-30charlines/
