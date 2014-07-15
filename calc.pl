@@ -57,14 +57,14 @@ sub calc {
             my $totalbytes = $bpl{$mode} * $lines;
             my $lms_count = ceil($totalbytes / 4096);
             my $lms_cycles = $lms_count * 3;
+            my $modeline_cycles = $lines - $lms_count;
             my $symbol_cycles = $mode <= 7 ? $bpl{$mode}*$lines : 0;
-            my $bitmap_multiple = $mode <= 7 ? 8 + ($mode == 3 ? 2 : 0) : 1;
+            my $bitmap_multiple = $mode == 3 ? 10 : $mode <= 7 ? 8 : 1;
             my $bitmap_cycles = $bpl{$mode}*$bitmap_multiple*$lines;
-            my $total = $refreshcycles + $lms_count + $symbol_cycles + $bitmap_cycles;
+            my $total = $refreshcycles + $lms_count + $modeline_cycles + $symbol_cycles + $bitmap_cycles;
             if ($lines <= $maxlines{$mode}) {
                 if ($norm) {
-                    my $total = $lms_count + $symbol_cycles + $bitmap_cycles;
-                    printf " %5.1f", ($realavailable-$total)/$realavailable*100;
+                    printf " %5.1f", ($available-$total)/$realavailable*100;
                 } else {
                     printf " %5.1f", ($available-$total)/$available*100;
                 }
