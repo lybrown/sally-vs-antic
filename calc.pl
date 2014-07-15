@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use POSIX qw(ceil);
+use List::Util qw(min);
 
 my %scanlines = qw(
     2  8
@@ -61,12 +62,21 @@ sub calc {
             my $symbol_cycles = $mode <= 7 ? $bpl{$mode}*$lines : 0;
             my $bitmap_multiple = $mode == 3 ? 10 : $mode <= 7 ? 8 : 1;
             my $bitmap_cycles = $bpl{$mode}*$bitmap_multiple*$lines;
-            my $total = $refreshcycles + $lms_count + $modeline_cycles + $symbol_cycles + $bitmap_cycles;
+            my $jump_cycles = $lines < $maxlines{$mode} ? 3 : 0;
+            my $blank_scanlines = ($maxlines{$mode} - $lines)*$scanlines{$mode};
+            my $blank_cycles = min($blank_scanlines>>3, 3);
+            my $total = $refreshcycles +
+                $blank_cycles +
+                $lms_count + $modeline_cycles +
+                $symbol_cycles + $bitmap_cycles +
+                $jump_cycles;
             if ($lines <= $maxlines{$mode}) {
                 if ($norm) {
                     printf " %5.1f", ($available-$total)/$realavailable*100;
+                    #printf " %5.1f", $blank_scanlines;
                 } else {
                     printf " %5.1f", ($available-$total)/$available*100;
+                    #printf " %5.1f", $blank_cycles;
                 }
             } else {
                 printf " %5s", "-";
@@ -89,10 +99,12 @@ to generate the tables. The calculations include the following cases where the
 CPU is halted:
 
 * DRAM refresh cycles (9 per scanline except for text-mode bad-lines)
+* Blank cycles (1 per group of 8 blank lines in top border, usually 3)
 * LMS cycles (3 per 4K of bitmap data)
 * Modeline cycles (1 per mode line that's not an LMS)
 * Symbol cycles (1 per text-mode column)
 * Bitmap cycles (1 per byte for graphics, 8 per text-mode column, 10 for mode 3)
+* Jump cycles (3 unless display list spans all 240 visible scanlines)
 
 <pre>
 EOF
