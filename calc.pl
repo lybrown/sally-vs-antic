@@ -60,7 +60,7 @@ sub calc {
             my $lms_cycles = $lms_count * 3;
             my $modeline_cycles = $lines - $lms_count;
             my $symbol_cycles = $mode <= 7 ? $bpl{$mode}*$lines : 0;
-            my $bitmap_multiple = $mode == 3 ? 10 : $mode <= 7 ? 8 : 1;
+            my $bitmap_multiple = $mode <= 7 ? $scanlines{$mode} : 1;
             my $bitmap_cycles = $bpl{$mode}*$bitmap_multiple*$lines;
             my $jump_cycles = $lines < $maxlines{$mode} ? 3 : 0;
             my $blank_scanlines = ($maxlines{$mode} - $lines)*$scanlines{$mode};
